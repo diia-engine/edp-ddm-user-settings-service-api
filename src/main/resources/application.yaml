@@ -18,6 +18,7 @@ spring:
     resources:
       add-mappings: false
   redis:
+    username: ${REDIS_USERNAME}
     password: ${REDIS_PASSWORD}
     sentinel:
       master: mymaster

@@ -88,7 +88,7 @@ db:
   connectionTimeout: 4000
 
 redis:
-  secretName: redis-auth
+  secretName: redis-user-settings-service-api-user-secret
 
 redisSecretsMountPath: "/app/secrets/redis"
 

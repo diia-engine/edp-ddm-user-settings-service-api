@@ -2,6 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Values.name }}-deployment
+  annotations:
+    secret.reloader.stakater.com/reload: "{{ .Values.db.secret }},{{ .Values.redis.secretName }}"
+    configmap.reloader.stakater.com/reload: "user-settings-service-api-properties"
   labels:
     app: {{ .Values.name }}
     version: {{ .Values.version }}
@@ -104,6 +107,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.db.secret }}
                   key: settRolePass
+            - name: REDIS_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.redis.secretName }}
+                  key: username
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -119,8 +127,6 @@ spec:
             - mountPath: /app/secrets
               name: db-credentials
               readOnly: true
-            - name: {{ .Chart.Name }}-redis-credentials
-              mountPath: {{ .Values.redisSecretsMountPath }}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
       initContainers:
@@ -146,9 +152,3 @@ spec:
                 path: data-platform.datasource.password
               - key: settRoleName
                 path: data-platform.datasource.username
-        - name: {{ .Chart.Name }}-redis-credentials
-          secret:
-            secretName: {{ .Values.redis.secretName }}
-            items:
-              - key: password
-                path: redis.password
